@@ -1,23 +1,36 @@
 import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [data, setData] = useState({});
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setValue((prev) => prev + 1);
+    }, 120000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if(value > 0){
+      fetch(`https://jsonplaceholder.typicode.com/todos/${value}`)
+      .then(response => response.json())
+      .then(json => setData(json))
+    }
+  },[value])
+
+  const handleApi = () => {
+    setValue((prev) => prev + 1);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {Object.keys(data).length > 0 && <h1>{data.title}</h1>}
+      <button onClick={handleApi}>Fetch API</button>
     </div>
   );
 }
